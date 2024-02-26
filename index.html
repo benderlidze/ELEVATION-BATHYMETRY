@@ -32,6 +32,7 @@
 
     <script>
 
+        const glDraw = ['gl-draw-polygon-fill-inactive.cold', 'gl-draw-polygon-fill-active.cold', 'gl-draw-polygon-midpoint.cold', 'gl-draw-polygon-stroke-inactive.cold', 'gl-draw-polygon-stroke-active.cold', 'gl-draw-line-inactive.cold', 'gl-draw-line-active.cold', 'gl-draw-polygon-and-line-vertex-stroke-inactive.cold', 'gl-draw-polygon-and-line-vertex-inactive.cold', 'gl-draw-point-point-stroke-inactive.cold', 'gl-draw-point-inactive.cold', 'gl-draw-point-stroke-active.cold', 'gl-draw-point-active.cold', 'gl-draw-polygon-fill-static.cold', 'gl-draw-polygon-stroke-static.cold', 'gl-draw-line-static.cold', 'gl-draw-point-static.cold', 'gl-draw-polygon-fill-inactive.hot', 'gl-draw-polygon-fill-active.hot', 'gl-draw-polygon-midpoint.hot', 'gl-draw-polygon-stroke-inactive.hot', 'gl-draw-polygon-stroke-active.hot', 'gl-draw-line-inactive.hot', 'gl-draw-line-active.hot', 'gl-draw-polygon-and-line-vertex-stroke-inactive.hot', 'gl-draw-polygon-and-line-vertex-inactive.hot', 'gl-draw-point-point-stroke-inactive.hot', 'gl-draw-point-inactive.hot', 'gl-draw-point-stroke-active.hot', 'gl-draw-point-active.hot', 'gl-draw-polygon-fill-static.hot', 'gl-draw-polygon-stroke-static.hot', 'gl-draw-line-static.hot', 'gl-draw-point-static.hot']
 
         mapboxgl.accessToken = 'pk.eyJ1IjoiYXJsYXlzaGEiLCJhIjoiY2xydGhncjE0MDZxYjJycnowa2R4Z2FpaCJ9.d0bSGtOD6btxhUsTgdHEgw';
         const map = new mapboxgl.Map({
@@ -43,8 +44,10 @@
             projection: 'globe'
         });
 
+        const Draw = new MapboxDraw();
+        map.addControl(Draw, 'top-left');
 
-
+        //add rater tiles 
         map.on('load', () => {
             map.addSource('raster-tiles', {
                 type: 'raster',
@@ -58,9 +61,18 @@
                 id: 'raster-tiles',
                 type: 'raster',
                 source: 'raster-tiles',
-            })
+            }, ...glDraw)
 
-           
+            // map.addSource("augmented-dem", {
+            //     type: "raster-dem",
+            //     tiles: [
+            //         '/maptiles/{z}/{x}/{y}.png',
+            //     ],
+            //     tileSize: 256,
+            //     maxzoom: 14,
+            //     encoding: "terrarium",
+            // });
+            // map.setTerrain({ source: "augmented-dem", exaggeration: 10 });
 
         });
 

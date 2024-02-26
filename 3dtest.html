@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Style symbols based on pitch</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.css'
+        type='text/css' />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script>
+        // TO MAKE THE MAP APPEAR YOU MUST
+        // ADD YOUR ACCESS TOKEN FROM
+        // https://account.mapbox.com
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYXJsYXlzaGEiLCJhIjoiY2xydGhncjE0MDZxYjJycnowa2R4Z2FpaCJ9.d0bSGtOD6btxhUsTgdHEgw';
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            zoom: 13.5,
+            pitch: 85,
+            bearing: 70,
+            center: [-119.53543366513888, 37.74467518164313],
+            // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+            style: 'mapbox://styles/mapbox-map-design/claitl3i0002715qm9990tl95'
+        });
+
+        const Draw = new MapboxDraw();
+        map.addControl(Draw, 'top-left');
+
+        map.on('load', () => {
+            // Extract JSON representation of an existing layer
+            const layer = map
+                .getStyle()
+                .layers.find((layer) => layer.id === 'natural-point-label');
+            // Add in a pitch condition to the existing layers filter
+            // so that it only renders when the pitch is low
+            const lowPitchFilter = ['all', layer.filter, ['<', ['pitch'], 60]];
+            map.setFilter('natural-point-label', lowPitchFilter);
+
+            // Add in styling for leader lines into the layer
+            layer.id = 'natural-point-label-elevated';
+            // Add a leader line using `icon-image`
+            layer.layout['icon-image'] = 'leader_line';
+            layer.layout['icon-anchor'] = 'bottom';
+            // Elevate the text using text-offset
+            layer.layout['text-offset'] = [0, -12.5];
+            // Set the filter to only render at high pitch
+            const highPitchFilter = ['all', layer.filter, ['>=', ['pitch'], 60]];
+            layer.filter = highPitchFilter;
+
+            // Add in a new layer with the updated styling
+            map.addLayer(layer, 'natural-point-label');
+        });
+    </script>
+
+</body>
+
+</html>
